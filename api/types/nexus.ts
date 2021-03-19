@@ -71,6 +71,7 @@ export interface NexusGenObjects {
   User: { // root type
     id: number; // Int!
     isAdmin: boolean; // Boolean!
+    person?: NexusGenRootTypes['Person'] | null; // Person
     username: string; // String!
   }
 }
@@ -99,7 +100,6 @@ export interface NexusGenFieldTypes {
     username: string | null; // String
   }
   Mutation: { // field return type
-    signin: NexusGenRootTypes['AuthType'] | null; // AuthType
     signup: NexusGenRootTypes['AuthType'] | null; // AuthType
   }
   Person: { // field return type
@@ -117,6 +117,8 @@ export interface NexusGenFieldTypes {
     decodeMyToken: NexusGenRootTypes['DecodedToken'] | null; // DecodedToken
     getMyUser: NexusGenRootTypes['User'] | null; // User
     listPersons: NexusGenRootTypes['Person'][]; // [Person!]!
+    listUsers: NexusGenRootTypes['User'][]; // [User!]!
+    signin: NexusGenRootTypes['AuthType'] | null; // AuthType
   }
   User: { // field return type
     id: number; // Int!
@@ -140,7 +142,6 @@ export interface NexusGenFieldTypeNames {
     username: 'String'
   }
   Mutation: { // field return type name
-    signin: 'AuthType'
     signup: 'AuthType'
   }
   Person: { // field return type name
@@ -158,6 +159,8 @@ export interface NexusGenFieldTypeNames {
     decodeMyToken: 'DecodedToken'
     getMyUser: 'User'
     listPersons: 'Person'
+    listUsers: 'User'
+    signin: 'AuthType'
   }
   User: { // field return type name
     id: 'Int'
@@ -169,14 +172,16 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
-    signin: { // args
-      password: string; // String!
-      username: string; // String!
-    }
     signup: { // args
       password_1: string; // String!
       password_2: string; // String!
       personId: number; // Int!
+      username: string; // String!
+    }
+  }
+  Query: {
+    signin: { // args
+      password: string; // String!
       username: string; // String!
     }
   }

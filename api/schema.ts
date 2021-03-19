@@ -4,10 +4,10 @@ import {
   nonNull,
   objectType,
   stringArg,
-  inputObjectType,
-  arg,
+  // inputObjectType,
+  // arg,
   asNexusMethod,
-  enumType,
+  // enumType,
 } from 'nexus'
 import { GraphQLDateTime } from 'graphql-iso-date'
 import { Context } from './types/interface'
@@ -23,6 +23,8 @@ import { applyMiddleware } from 'graphql-middleware'
 
 export const DateTime = asNexusMethod(GraphQLDateTime, 'date')
 
+
+// R from CRUD
 const Queries = objectType({
   name: 'Query',
   definition(t) {
@@ -30,6 +32,15 @@ const Queries = objectType({
       type: 'Person',
       resolve: (parent, args, context: Context) => {
         return context.prisma.person.findMany()
+      },
+    })
+
+    t.nonNull.list.nonNull.field('listUsers', {
+      type: 'User',
+      resolve: (parent, args, context: Context) => {
+        return context.prisma.user.findMany({
+          include: { person: true }
+        })
       },
     })
 
@@ -42,6 +53,9 @@ const Queries = objectType({
             where: {
               id: decodedId,
             },
+            include: {
+              person: true
+            }
           })
 
           return user
@@ -58,12 +72,7 @@ const Queries = objectType({
         return null
       },
     })
-  },
-})
 
-const Mutations = objectType({
-  name: 'Mutation',
-  definition(t) {
     t.field('signin', {
       type: 'AuthType',
       args: {
@@ -79,13 +88,24 @@ const Mutations = objectType({
         const passwordMatched = compareHash(user, password)
         if (!passwordMatched) throw new Error('invalid username or password')
 
+        const token = encodeToken(user)
+
+        // context.res.setHeader('Authorization', `Bearer ${token}`)
+        context.res.cookie('Authorization', `Bearer ${token}`)
+
         return {
-          token: encodeToken(user),
+          token,
           user: user,
         }
       },
     })
+  },
+})
 
+// CUD from CRUD
+const Mutations = objectType({
+  name: 'Mutation',
+  definition(t) {
     t.field('signup', {
       type: 'AuthType',
       args: {
@@ -119,8 +139,10 @@ const Mutations = objectType({
           },
         })
 
+        const token = encodeToken(user)
+        context.res.cookie('Authorization', `Bearer ${token}`)
         return {
-          token: encodeToken(user),
+          token,
           user: user,
         }
       },
@@ -155,16 +177,7 @@ const User = objectType({
     t.nonNull.string('username')
     t.nonNull.boolean('isAdmin')
     // t.nonNull.string('passwordHash')
-    t.field('person', {
-      type: 'Person',
-      resolve: (parent, args, context: Context) => {
-        return context.prisma.user
-          .findUnique({
-            where: { id: parent.id },
-          })
-          .person()
-      },
-    })
+    t.field('person', { type: 'Person' })
   },
 })
 

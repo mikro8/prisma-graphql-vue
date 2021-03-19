@@ -22,7 +22,6 @@ type DecodedToken {
 }
 
 type Mutation {
-  signin(password: String!, username: String!): AuthType
   signup(password_1: String!, password_2: String!, personId: Int!, username: String!): AuthType
 }
 
@@ -42,6 +41,8 @@ type Query {
   decodeMyToken: DecodedToken
   getMyUser: User
   listPersons: [Person!]!
+  listUsers: [User!]!
+  signin(password: String!, username: String!): AuthType
 }
 
 type User {

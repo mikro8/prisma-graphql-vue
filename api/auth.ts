@@ -6,9 +6,11 @@ import { User } from '.prisma/client'
 
 export const SECRET = 'ssssssh123'
 
-export function decodeTokenFromContext(context: Context): DecodedToken | undefined {
+export function decodeTokenFromContext(
+  context: Context,
+): DecodedToken | undefined {
   // return  as DecodedToken
-  const Authorization = context.req.get('Authorization')
+  const Authorization = context.req.cookies['Authorization']
   if (Authorization && Authorization.slice(0, 7) === 'Bearer ') {
     const token = Authorization.slice(7)
     const decoded = decodeToken(token)
@@ -36,17 +38,22 @@ export async function compareHash(user: User, inputPassword: string) {
 }
 
 export const Rules = {
-  isLoggedIn: rule()(async (parent, args, context: Context): Promise<boolean> => {
-    const decoded = decodeTokenFromContext(context)
-    if(!decoded) return false
-    const user = await context.prisma.user.findFirst({
-      where: {
-        id: decoded?.id
+  isLoggedIn: rule()(
+    async (parent, args, context: Context): Promise<boolean> => {
+      const decoded = decodeTokenFromContext(context)
+      if (!decoded) {
+        context.res.status(401) // set the 401 Unauthorized code
+        return false
       }
-    })
-    // console.log(user)
-    return user ? true : false
-  }),
+      const user = await context.prisma.user.findFirst({
+        where: {
+          id: decoded?.id,
+        },
+      })
+      // console.log(user)
+      return user ? true : false
+    },
+  ),
 }
 
 export const permissions = shield(
@@ -54,8 +61,9 @@ export const permissions = shield(
     Query: {
       listPersons: Rules.isLoggedIn,
       getMyUser: Rules.isLoggedIn,
+      decodeMyToken: Rules.isLoggedIn,
     },
     // Mutation: {},
   },
-  { allowExternalErrors: true },
+  { allowExternalErrors: true }, // allow throwing custom errors with throw
 )

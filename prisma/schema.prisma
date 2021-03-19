@@ -29,5 +29,12 @@ model User {
   passwordHash String
   person       Person @relation(fields: [personId], references: [id])
   personId     Int
-  isAdmin        Boolean @default(false)
+  isAdmin      Boolean @default(false)
+  isDev        Boolean @default(false)
+}
+
+model NewUser {
+  secret    String    @id
+  personId  Int
+  expires   DateTime
 }

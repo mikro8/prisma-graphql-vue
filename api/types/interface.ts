@@ -1,9 +1,10 @@
 import { PrismaClient, User } from '@prisma/client'
-import { Request } from 'express'
+import { Request, Response } from 'express'
 
 export interface Context {
   prisma: PrismaClient
   req: Request
+  res: Response
 }
 
 export interface DecodedToken extends User {
