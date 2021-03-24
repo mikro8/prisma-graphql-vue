@@ -11,7 +11,7 @@ module.exports = {
   pages: {
     index: {
       // entry for the page
-      entry: __dirname + '/vue/src/main.ts',
+      entry: __dirname + '/vue/src/main',
       // the source template
       template: __dirname + '/vue/src/public/index.html',
       // output as dist/index.html
