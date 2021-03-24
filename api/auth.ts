@@ -39,7 +39,7 @@ export async function compareHash(user: User, inputPassword: string) {
 
 export const Rules = {
   isLoggedIn: rule()(
-    async (parent, args, context: Context): Promise<boolean> => {
+    async (_parent, _args, context: Context): Promise<boolean> => {
       const decoded = decodeTokenFromContext(context)
       if (!decoded) {
         context.res.status(401) // set the 401 Unauthorized code

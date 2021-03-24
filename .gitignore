@@ -78,3 +78,9 @@ typings/
 
 # FuseBox cache
 .fusebox/
+
+dist
+
+vue/vueOriginalFilesBackup
+.fake
+.ionide
