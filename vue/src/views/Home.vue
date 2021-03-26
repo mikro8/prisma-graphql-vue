@@ -24,28 +24,16 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import gql from 'graphql-tag'
-import { useQuery, useMutation } from '@vue/apollo-composable'
-// import "vue-apollo";
+import listPersonsQuery from '../apollo/queries/listPersons'
 
 @Component({
   setup() {
-    const { result, loading, error } = useQuery(gql`
-      query getPersons {
-        listPersons {
-          id
-          fullname
-          employmentDate
-          salary
-        }
-      }
-    `)
-
-    return { result, loading, error }
+    const { listPersons } = new listPersonsQuery()
+    return { ...listPersons }
   },
 })
 export default class Home extends Vue {
-  // result = null
+  public refetch!: any
 
   errorHas401(error: any): boolean {
     return error.toString().includes('code 401')
@@ -66,6 +54,10 @@ export default class Home extends Vue {
 
     return `${day}-${month}-${year}`
   }
+
+  mounted() {
+    this.refetch()
+  }
 }
 </script>
 
@@ -83,7 +75,7 @@ export default class Home extends Vue {
   color: azure;
 }
 
-.person.label{
+.person.label {
   background: black;
   color: white;
 }
@@ -92,7 +84,7 @@ export default class Home extends Vue {
   width: 100%;
 }
 
-.person .employmentDate{
+.person .employmentDate {
   width: 300px;
 }
 

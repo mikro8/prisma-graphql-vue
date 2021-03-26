@@ -56,12 +56,18 @@ export interface NexusGenObjects {
     personId?: number | null; // Int
     username?: string | null; // String
   }
+  HomeOfficeType: { // root type
+    date: string; // String!
+    id: number; // Int!
+    personId: number; // Int!
+  }
   Mutation: {};
   Person: { // root type
     email?: string | null; // String
     employmentDate: NexusGenScalars['DateTime']; // DateTime!
     employmentStatus: boolean; // Boolean!
     firstname: string; // String!
+    homeoffices: Array<NexusGenRootTypes['HomeOfficeType'] | null>; // [HomeOfficeType]!
     id: number; // Int!
     lastname: string; // String!
     salary: number; // Float!
@@ -99,6 +105,11 @@ export interface NexusGenFieldTypes {
     personId: number | null; // Int
     username: string | null; // String
   }
+  HomeOfficeType: { // field return type
+    date: string; // String!
+    id: number; // Int!
+    personId: number; // Int!
+  }
   Mutation: { // field return type
     signup: NexusGenRootTypes['AuthType'] | null; // AuthType
   }
@@ -108,6 +119,7 @@ export interface NexusGenFieldTypes {
     employmentStatus: boolean; // Boolean!
     firstname: string; // String!
     fullname: string | null; // String
+    homeoffices: Array<NexusGenRootTypes['HomeOfficeType'] | null>; // [HomeOfficeType]!
     id: number; // Int!
     lastname: string; // String!
     salary: number; // Float!
@@ -141,6 +153,11 @@ export interface NexusGenFieldTypeNames {
     personId: 'Int'
     username: 'String'
   }
+  HomeOfficeType: { // field return type name
+    date: 'String'
+    id: 'Int'
+    personId: 'Int'
+  }
   Mutation: { // field return type name
     signup: 'AuthType'
   }
@@ -150,6 +167,7 @@ export interface NexusGenFieldTypeNames {
     employmentStatus: 'Boolean'
     firstname: 'String'
     fullname: 'String'
+    homeoffices: 'HomeOfficeType'
     id: 'Int'
     lastname: 'String'
     salary: 'Float'

@@ -21,6 +21,12 @@ type DecodedToken {
   username: String
 }
 
+type HomeOfficeType {
+  date: String!
+  id: Int!
+  personId: Int!
+}
+
 type Mutation {
   signup(password_1: String!, password_2: String!, personId: Int!, username: String!): AuthType
 }
@@ -31,6 +37,7 @@ type Person {
   employmentStatus: Boolean!
   firstname: String!
   fullname: String
+  homeoffices: [HomeOfficeType]!
   id: Int!
   lastname: String!
   salary: Float!

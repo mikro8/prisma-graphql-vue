@@ -23,7 +23,6 @@ import { applyMiddleware } from 'graphql-middleware'
 
 export const DateTime = asNexusMethod(GraphQLDateTime, 'date')
 
-
 // R from CRUD
 const Queries = objectType({
   name: 'Query',
@@ -31,7 +30,9 @@ const Queries = objectType({
     t.nonNull.list.nonNull.field('listPersons', {
       type: 'Person',
       resolve: (parent, args, context: Context) => {
-        return context.prisma.person.findMany()
+        return context.prisma.person.findMany({
+          include: { homeoffices: true },
+        })
       },
     })
 
@@ -39,7 +40,7 @@ const Queries = objectType({
       type: 'User',
       resolve: (parent, args, context: Context) => {
         return context.prisma.user.findMany({
-          include: { person: true }
+          include: { person: { include: { homeoffices: true } } },
         })
       },
     })
@@ -53,9 +54,7 @@ const Queries = objectType({
             where: {
               id: decodedId,
             },
-            include: {
-              person: true
-            }
+            include: { person: { include: { homeoffices: true } } },
           })
 
           return user
@@ -158,15 +157,16 @@ const Person = objectType({
     t.nonNull.string('lastname')
     t.field('fullname', {
       type: 'String',
-      resolve: (parent) => {
+      resolve: parent => {
         return `${parent.firstname} ${parent.lastname}`
-      }
+      },
     })
     t.nonNull.date('employmentDate')
     t.nonNull.boolean('employmentStatus')
     t.date('unEmploymentDate')
     t.nonNull.float('salary')
     t.string('email')
+    t.nonNull.list.field('homeoffices', { type: 'HomeOfficeType' })
   },
 })
 
@@ -189,6 +189,15 @@ const AuthType = objectType({
   },
 })
 
+const HomeOfficeType = objectType({
+  name: 'HomeOfficeType',
+  definition(t) {
+    t.nonNull.int('id')
+    t.nonNull.int('personId')
+    t.nonNull.string('date')
+  },
+})
+
 const DecodedTokenType = objectType({
   name: 'DecodedToken',
   definition(t) {
@@ -198,7 +207,7 @@ const DecodedTokenType = objectType({
     t.int('personId')
     t.boolean('isAdmin')
     t.int('iat')
-  }
+  },
 })
 
 const MainSchema = makeSchema({
@@ -210,6 +219,7 @@ const MainSchema = makeSchema({
     DateTime,
     AuthType,
     DecodedTokenType,
+    HomeOfficeType,
   ],
   outputs: {
     schema: __dirname + '/schema.graphql',

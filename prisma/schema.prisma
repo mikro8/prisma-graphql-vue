@@ -21,6 +21,7 @@ model Person {
   salary Float @default(0)
   email     String?
   User      User?
+  homeoffices HomeOffice[]
 }
 
 model User {
@@ -37,4 +38,11 @@ model NewUser {
   secret    String    @id
   personId  Int
   expires   DateTime
+}
+
+model HomeOffice {
+  id      Int     @id @default(autoincrement())
+  person       Person @relation(fields: [personId], references: [id])
+  personId     Int
+  date    String
 }
